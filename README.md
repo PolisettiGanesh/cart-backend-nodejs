@@ -24,3 +24,17 @@ cart-backend/
 │   └── users.js
 ## Status
 🚧 In progress – Day 1 complete
+====================================================
+
+1. npm i bcrypt
+2. Import bcrypt on newly created file hash-pass.js
+            const bcrypt = require('bcrypt');
+
+            async function hashPass(){
+                const password ="12345";
+                const hashedPass = await bcrypt.hash(password,10);
+                console.log(hashedPass);
+            }
+            hashPass();
+            hashPass();
+

@@ -1,13 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
+// routes
+const usersRoutes = require("./routes/users");
 
 const app = express();
 
-// middleware
+// middleware used to convert json to js object
 app.use(express.json());
 
-// routes
-const usersRoutes = require("./routes/users");
 app.use("/api/users", usersRoutes);
 
 // db connection
