@@ -10,3 +10,8 @@
 - Password hashing using bcrypt
 - JWT token generation
 - Secure user registration
+
+### Day 3 Progress
+- Implemented user login API
+- Added bcrypt password verification
+- Generated JWT token on successful login
