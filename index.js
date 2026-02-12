@@ -1,15 +1,20 @@
 require('dotenv').config();
+require("./config/passport");
+const passport = require("passport");
 const express = require("express");
 const mongoose = require("mongoose");
 // routes
 const usersRoutes = require("./routes/users");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
 // middleware used to convert json to js object
 app.use(express.json());
+app.use(passport.initialize());
 
 app.use("/api/users", usersRoutes);
+app.use("/api/auth", authRoutes);
 
 // db connection
 mongoose
