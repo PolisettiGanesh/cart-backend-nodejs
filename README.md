@@ -1,123 +1,184 @@
 Perfect bro 🔥
-I’ll give you a **clean, professional README.md** updated up to Day 5 including Google OAuth.
+Now I’ll update your README to **Day 6**, including:
 
-You can copy-paste this directly into your GitHub `README.md`.
+* ✅ Facebook OAuth
+* ✅ Multi-provider authentication
+* ✅ Better architecture section
+* ✅ Cleaner enterprise tone
 
----
-
-# 🛒 Cart Backend API (Node.js + Express + MongoDB)
-
-Backend authentication system built using:
-
-- Node.js
-- Express.js
-- MongoDB (Mongoose)
-- JWT
-- bcrypt
-- Passport.js (Google OAuth 2.0)
+You can replace your current README with this 👇
 
 ---
 
-# 🚀 Project Overview
+# 🛒 Cart Backend API
 
-This project implements a complete authentication system including:
+### 🔐 Enterprise Authentication System (Node.js + Express + MongoDB)
 
-- User registration
-- Secure login
-- JWT-based authentication
-- Protected routes
-- Google OAuth 2.0 login
-- Password hashing
-- MongoDB integration
+---
+
+## 🚀 Project Overview
+
+This project implements a **production-ready authentication system** using:
+
+* **Node.js**
+* **Express.js**
+* **MongoDB (Mongoose)**
+* **JWT (JSON Web Tokens)**
+* **bcrypt**
+* **Passport.js**
+* **Google OAuth 2.0**
+* **Facebook OAuth 2.0**
+
+The system supports **multi-provider authentication** with secure JWT-based stateless sessions.
 
 ---
 
 # 📅 Progress Log
 
-## ✅ Day 1
+---
 
-- Express server setup
-- MongoDB connection using Mongoose
-- Created User model
-- Implemented Create User API
+## ✅ Day 1 — Backend Setup
+
+* Express server initialization
+* MongoDB connection using Mongoose
+* Created User schema
+* Implemented Create User API
 
 ---
 
-## ✅ Day 2
+## ✅ Day 2 — Secure Registration
 
-- Password hashing using bcrypt
-- JWT token generation
-- Secure user registration flow
-- Environment variable setup (.env)
-
----
-
-## ✅ Day 3
-
-- Implemented user login API
-- Added bcrypt password verification
-- Generated JWT token on successful login
-- Error handling for invalid credentials
+* Password hashing using bcrypt
+* JWT generation after signup
+* Environment variables configuration
+* Secure storage of secret keys
 
 ---
 
-## ✅ Day 4
+## ✅ Day 3 — Login System
 
-- Created authentication middleware
-- Protected routes using JWT verification
-- Extracted token from Authorization header
-- Attached decoded user to `req.user`
+* Implemented Login API
+* Password validation using bcrypt.compare()
+* Generated JWT on successful login
+* Handled invalid credentials properly
 
 ---
 
-## ✅ Day 5
+## ✅ Day 4 — Authentication Middleware
 
-- Implemented Google OAuth 2.0 login
-- Configured Google Cloud Console
-- Integrated Passport.js with Google Strategy
-- Implemented Authorization Code Flow
-- Created/find user in database after Google login
-- Generated JWT after successful OAuth login
-- Removed password field from response
-- Disabled session-based authentication (JWT only)
+* Created custom JWT verification middleware
+* Extracted token from Authorization header
+* Verified token using jwt.verify()
+* Attached decoded user to `req.user`
+* Protected private routes
+
+---
+
+## ✅ Day 5 — Google OAuth 2.0
+
+* Configured Google Cloud Console
+* Generated Client ID & Client Secret
+* Integrated Passport Google Strategy
+* Implemented Authorization Code Flow
+* Created/Updated user after Google login
+* Generated JWT after OAuth authentication
+* Disabled session-based authentication
+* Removed password from API responses
+
+---
+
+## ✅ Day 6 — Facebook OAuth 2.0
+
+* Created Facebook Developer App
+* Configured Facebook Login product
+* Added Valid OAuth Redirect URI
+* Integrated Passport Facebook Strategy
+* Requested profile + email permissions
+* Implemented `/api/auth/facebook` route
+* Implemented `/api/auth/facebook/callback` route
+* Created/Updated user using facebookId
+* Generated JWT after Facebook login
+* Enabled multi-provider authentication system
 
 ---
 
 # 🔐 Authentication Features
 
-### 📌 Email & Password Authentication
+---
 
-- Secure password hashing using bcrypt
-- JWT token issued on login
-- Protected routes require valid Bearer token
+## 📌 Email & Password Authentication
+
+* Secure password hashing using bcrypt
+* JWT token issued on login
+* Stateless session management
+* Protected routes require Bearer token
 
 ---
 
-### 📌 Google OAuth 2.0 Authentication
+## 📌 Google OAuth 2.0
 
-Flow implemented:
+Authorization Code Flow:
 
-1. User clicks login with Google
-2. Backend redirects to Google
+1. User clicks Google login
+2. Redirect to Google
 3. Google verifies credentials
-4. Google sends authorization code
+4. Authorization code returned
 5. Backend exchanges code + client secret
-6. Passport fetches user profile
-7. User is created/found in MongoDB
-8. JWT generated
-9. Token returned in response
+6. Access token generated
+7. Profile fetched
+8. User stored in MongoDB
+9. JWT generated
 
 ---
 
-# 🧠 Authentication Flow (High-Level)
+## 📌 Facebook OAuth 2.0
+
+Same 5-step OAuth pattern:
+
+1. User clicks Facebook login
+2. Redirect to Facebook
+3. Facebook verifies user
+4. Authorization code returned
+5. Backend exchanges code + app secret
+6. Access token generated
+7. Profile fetched
+8. User stored using facebookId
+9. JWT generated
+
+---
+
+# 🧠 High-Level Authentication Architecture
 
 ```
-User → Backend → Google
-Google → Backend (code)
-Backend → Google (code + secret)
-Google → Backend (profile)
-Backend → MongoDB
-Backend → JWT → Response
+User (Browser)
+        │
+        ▼
+Express Backend
+        │
+        ├── Email/Password Auth
+        ├── Google OAuth
+        ├── Facebook OAuth
+        │
+        ▼
+MongoDB Database
+        │
+        ▼
+JWT Issued → Client
+```
+
+---
+
+# 🔄 OAuth Flow Architecture
+
+```
+User → Backend → OAuth Provider
+OAuth Provider → Authorization Code
+Backend → Exchange code + Secret
+OAuth Provider → Access Token
+Backend → Fetch Profile
+Backend → Create/Find User
+Backend → Generate JWT
+Backend → Response
 ```
 
 ---
@@ -147,56 +208,48 @@ package.json
 
 # ⚙️ Environment Variables
 
-Create a `.env` file:
+Create `.env` file:
 
 ```
 PORT=3000
-JWT_KEY=your_secret_key
+JWT_KEY=your_jwt_secret
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
 ```
 
-⚠️ Do not push `.env` to GitHub.
-
----
-
-# 🛠 Installation & Setup
-
-```bash
-git clone <repo-url>
-cd cart-backend
-npm install
-```
-
-Run server:
-
-```bash
-nodemon index.js
-```
+⚠️ `.env` is ignored using `.gitignore`.
 
 ---
 
 # 🔑 API Endpoints
 
-### Create User
+### ➤ Register User
 
 ```
 POST /api/users
 ```
 
-### Login
+### ➤ Login User
 
 ```
 POST /api/users/login
 ```
 
-### Google Login
+### ➤ Google Login
 
 ```
 GET /api/auth/google
 ```
 
-### Protected Route Example
+### ➤ Facebook Login
+
+```
+GET /api/auth/facebook
+```
+
+### ➤ Protected Route Example
 
 ```
 GET /api/users/profile
@@ -205,37 +258,68 @@ GET /api/users/profile
 Header:
 
 ```
-Authorization: Bearer <token>
+Authorization: Bearer <JWT_TOKEN>
 ```
 
 ---
 
-# 🛡 Security Practices Implemented
+# 🛡 Security Best Practices Implemented
 
-- Password hashing using bcrypt
-- JWT expiration
-- Client secret stored in environment variables
-- Password excluded from response
-- No session-based authentication
-- Protected routes via middleware
+* Password hashing (bcrypt)
+* JWT expiration time
+* Client secrets stored in environment variables
+* No session-based authentication
+* OAuth authorization code flow
+* Password excluded from API responses
+* Sparse unique social ID fields
+* Middleware-based route protection
+
+---
+
+# 🏆 Current System Capabilities
+
+✔ Email Registration
+✔ Email Login
+✔ Google OAuth Login
+✔ Facebook OAuth Login
+✔ JWT Authentication
+✔ Protected Routes
+✔ Stateless Session Management
+✔ Multi-provider Authentication
+
+---
+
+# 📈 Future Enhancements
+
+* Refresh token implementation
+* Role-based authorization (Admin/User)
+* Account linking (Google + Facebook)
+* Rate limiting
+* Production deployment (Render / Railway)
+* Docker containerization
+* Swagger API documentation
 
 ---
 
 # 🎯 Learning Outcomes
 
-- Understood JWT authentication deeply
-- Implemented Authorization Code Flow
-- Integrated Passport with Express
-- Learned difference between Authentication & Authorization
-- Managed OAuth client credentials securely
+* Deep understanding of JWT authentication
+* Implemented OAuth 2.0 Authorization Code Flow
+* Integrated multi-provider authentication
+* Designed scalable backend architecture
+* Applied secure development practices
 
 ---
 
-# 🏆 Current Status
+# ⭐ Final Status
 
-✔ Email authentication complete
-✔ Google OAuth complete
-✔ JWT protected routes working
-✔ Production-ready authentication system
+This backend now supports a **production-style authentication architecture** with:
+
+* Multi-provider OAuth
+* Secure JWT-based authentication
+* Clean modular structure
+* Scalable authentication flow
 
 ---
+
+🔥 Now bro…

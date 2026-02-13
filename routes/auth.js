@@ -62,5 +62,57 @@ res.json({
     }
   }
 );
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", {
+    scope: ["public_profile", "email"],
+  })
+);
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { session: false }),
+  async (req, res) => {
+    try {
+      const profile = req.user;
+
+      let user = await User.findOne({
+        $or: [
+          { facebookId: profile.id },
+          { email: profile.emails?.[0]?.value },
+        ],
+      });
+
+      if (!user) {
+        user = new User({
+          name: profile.displayName,
+          email: profile.emails?.[0]?.value,
+          facebookId: profile.id,
+        });
+
+        await user.save();
+      }
+
+      const token = jwt.sign(
+        {
+          _id: user._id,
+          name: user.name,
+        },
+        process.env.JWT_KEY,
+        { expiresIn: "2h" }
+      );
+
+      const userData = await User.findById(user._id).select("-password");
+
+      res.json({
+        message: "Facebook login successful",
+        user: userData,
+        token,
+      });
+
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
 
 module.exports = router;

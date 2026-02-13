@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  facebookId: {
+  type: String,
+  unique: true,
+  sparse: true,
+},
+
 });
 
 const User = mongoose.model("User", userSchema);

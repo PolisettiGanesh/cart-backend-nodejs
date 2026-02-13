@@ -18,3 +18,18 @@ passport.use(
     }
   )
 );
+const FacebookStrategy = require("passport-facebook").Strategy;
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      callbackURL: "http://localhost:3000/api/auth/facebook/callback",
+      profileFields: ["id", "displayName", "emails"],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      return done(null, profile);
+    }
+  )
+);
