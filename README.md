@@ -1,12 +1,4 @@
-Perfect bro 🔥
-Now I’ll update your README to **Day 6**, including:
 
-* ✅ Facebook OAuth
-* ✅ Multi-provider authentication
-* ✅ Better architecture section
-* ✅ Cleaner enterprise tone
-
-You can replace your current README with this 👇
 
 ---
 
