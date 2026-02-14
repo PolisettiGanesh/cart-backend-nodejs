@@ -16,7 +16,8 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     // 4. Verify token
-    const decodedUser = jwt.verify(token, process.env.JWT_KEY);
+    const decodedUser = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+
 
     // 5. Attach decoded user to request object
     req.user = decodedUser;

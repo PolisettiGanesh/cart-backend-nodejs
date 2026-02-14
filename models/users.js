@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema({
   unique: true,
   sparse: true,
 },
+ refreshToken: {
+  type: String,
+},
 
 });
 

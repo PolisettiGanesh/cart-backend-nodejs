@@ -4,6 +4,181 @@ const User = require("../models/users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+const authMiddleware = require("../middleware/auth");
+
+// ==============================
+// 🔹 HELPER FUNCTION (JWT)
+// ==============================
+const generateTokens = (user) => {
+  const accessToken = jwt.sign(
+    {
+      _id: user._id,
+      name: user.name,
+    },
+    process.env.ACCESS_TOKEN_KEY,
+    { expiresIn: "5m" }
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      _id: user._id,
+    },
+    process.env.REFRESH_TOKEN_KEY,
+    { expiresIn: "7d" }
+  );
+
+  return { accessToken, refreshToken };
+};
+
+// ==============================
+// 🔹 JOI VALIDATION SCHEMA
+// ==============================
+const createUserSchema = Joi.object({
+  name: Joi.string().min(3).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+  deliveryAddress: Joi.string().min(5).required(),
+});
+
+// ==============================
+// 🔹 SIGNUP API
+// ==============================
+router.post("/", async (req, res) => {
+  try {
+    const { error } = createUserSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        message: error.details[0].message,
+      });
+    }
+
+    const { name, email, password, deliveryAddress } = req.body;
+
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    const hashedPass = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPass,
+      deliveryAddress,
+    });
+
+    const savedUser = await newUser.save();
+
+    // 🔹 Generate tokens
+    const { accessToken, refreshToken } = generateTokens(savedUser);
+
+    // 🔹 Hash refresh token
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    savedUser.refreshToken = hashedRefreshToken;
+    await savedUser.save();
+
+    // 🔹 Set refresh token cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // true in production
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(201).json({
+      message: "User created successfully",
+      accessToken,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ==============================
+// 🔹 LOGIN API
+// ==============================
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // 🔹 Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // 🔹 Hash refresh token
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    user.refreshToken = hashedRefreshToken;
+    await user.save();
+
+    // 🔹 Set cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      accessToken,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ==============================
+// 🔹 PROFILE API (PROTECTED)
+// ==============================
+router.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json(user);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+module.exports = router;
+
+//------------------------------PART-3-----------------------------------------------------------------------------------------------------------
+/*
+const express = require("express");
+const router = express.Router();
+const User = require("../models/users");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const Joi = require("joi");
 const authMiddleware = require("../middleware/auth"); // 👈 auth middleware
 
 // ==============================
@@ -147,7 +322,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
 
 module.exports = router;
 
-
+*/
 //--------------------------Part-2-----------------------------------------------------------------------------------------------------------
 /*
 // const express = require('express');
